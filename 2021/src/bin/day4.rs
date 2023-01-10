@@ -1,4 +1,3 @@
-#[allow(unused_variables)]
 use std::{
     fs,
     io::{BufRead, BufReader},
@@ -35,12 +34,9 @@ impl Board {
     }
 }
 
-fn get_winners(
-    mut all_boards: Vec<Board>,
-    marker: Vec<i32>,
-    get_bingo_position: i32,
-) -> Option<i32> {
+fn get_winners(mut all_boards: Vec<Board>, marker: Vec<i32>) -> Result<()> {
     let mut bingo_position = 1;
+    let board_length = all_boards.len();
     for number in marker {
         let mut to_remove: Vec<usize> = vec![];
         for (idx, board) in all_boards.iter_mut().enumerate() {
@@ -48,8 +44,10 @@ fn get_winners(
             if board.check_bingo() {
                 let unmarked_sum: i32 = board.sets.iter().flatten().fold(0, |acc, x| acc + x) / 2;
                 to_remove.push(idx);
-                if bingo_position == get_bingo_position {
-                    return Some(unmarked_sum * number);
+                if bingo_position == 1 {
+                    println!("Part 1: {}", unmarked_sum * number);
+                } else if bingo_position == board_length {
+                    println!("Part 2: {}", unmarked_sum * number);
                 }
                 bingo_position += 1;
             }
@@ -59,7 +57,7 @@ fn get_winners(
             all_boards.remove(index);
         }
     }
-    None
+    Ok(())
 }
 
 fn main() -> Result<()> {
@@ -85,14 +83,6 @@ fn main() -> Result<()> {
     for board in file_content.windows(5).step_by(5) {
         all_boards.push(Board::new(board.to_owned()));
     }
-    println!(
-        "Part 1: {:?}",
-        get_winners(all_boards.clone(), marker.clone(), 1).unwrap()
-    );
-    let boards_len = all_boards.len();
-    println!(
-        "Part 2: {:?}",
-        get_winners(all_boards, marker, boards_len as i32).unwrap()
-    );
+    get_winners(all_boards, marker)?;
     Ok(())
 }
