@@ -6,7 +6,6 @@ use std::{
 use anyhow::Result;
 use itertools::Itertools;
 
-#[derive(Debug, Clone)]
 struct Board {
     sets: Vec<Vec<i32>>,
 }
