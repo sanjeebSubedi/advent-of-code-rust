@@ -23,6 +23,31 @@ impl Diagram {
             .fold(0, |acc, x| if x > &1 { acc + 1 } else { acc })
     }
 
+    fn diagonally_add(
+        &mut self,
+        x1: i32,
+        x2: i32,
+        y1: i32,
+        y2: i32,
+        rev_x: bool,
+        rev_y: bool,
+    ) -> Result<()> {
+        let iter_x: Vec<i32> = if rev_x {
+            (x1..=x2).into_iter().rev().collect()
+        } else {
+            (x1..=x2).into_iter().collect()
+        };
+        let iter_y: Vec<i32> = if rev_y {
+            (y1..=y2).into_iter().rev().collect()
+        } else {
+            (y1..=y2).into_iter().collect()
+        };
+        for (x, y) in iter_x.into_iter().zip(iter_y.into_iter()) {
+            self.increase_index(x.try_into()?, y.try_into()?);
+        }
+        Ok(())
+    }
+
     fn add_line(&mut self, point: &Vec<i32>, part2: bool) -> Result<()> {
         if point[0] == point[2] && point[1] == point[3] {
             return Ok(());
@@ -35,36 +60,14 @@ impl Diagram {
             }
         }
         if part2 && (point[0] - point[2]).abs() == (point[1] - point[3]).abs() {
-            match (point[0] > point[2], point[1] > point[3]) {
-                (true, true) => {
-                    let iter_x = (point[2]..=point[0]).rev().into_iter();
-                    let iter_y = (point[3]..=point[1]).rev().into_iter();
-                    for (x, y) in iter_x.zip(iter_y) {
-                        self.increase_index(x.try_into()?, y.try_into()?);
-                    }
-                }
-                (true, false) => {
-                    let iter_x = (point[2]..=point[0]).rev().into_iter();
-                    let iter_y = (point[1]..=point[3]).into_iter();
-                    for (x, y) in iter_x.zip(iter_y) {
-                        self.increase_index(x.try_into()?, y.try_into()?);
-                    }
-                }
-                (false, true) => {
-                    let iter_x = (point[0]..=point[2]).into_iter();
-                    let iter_y = (point[3]..=point[1]).rev().into_iter();
-                    for (x, y) in iter_x.zip(iter_y) {
-                        self.increase_index(x.try_into()?, y.try_into()?);
-                    }
-                }
-                (false, false) => {
-                    let iter_x = (point[0]..=point[2]).into_iter();
-                    let iter_y = (point[1]..=point[3]).into_iter();
-                    for (x, y) in iter_x.zip(iter_y) {
-                        self.increase_index(x.try_into()?, y.try_into()?);
-                    }
-                }
-            }
+            self.diagonally_add(
+                point[0].min(point[2]),
+                point[0].max(point[2]),
+                point[1].min(point[3]),
+                point[1].max(point[3]),
+                point[0] > point[2],
+                point[1] > point[3],
+            )?
         }
         Ok(())
     }
