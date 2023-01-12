@@ -48,18 +48,15 @@ impl Diagram {
         Ok(())
     }
 
-    fn add_line(&mut self, point: &Vec<i32>, part2: bool) -> Result<()> {
-        if point[0] == point[2] && point[1] == point[3] {
-            return Ok(());
-        }
-        if !part2 && (point[0] == point[2] || point[1] == point[3]) {
+    fn add_line(&mut self, point: &Vec<i32>, add_diagonally: bool) -> Result<()> {
+        if !add_diagonally && (point[0] == point[2] || point[1] == point[3]) {
             for idx_x in point[0].min(point[2])..=point[0].max(point[2]) {
                 for idx_y in point[1].min(point[3])..=point[1].max(point[3]) {
                     self.increase_index(idx_x.try_into()?, idx_y.try_into()?);
                 }
             }
         }
-        if part2 && (point[0] - point[2]).abs() == (point[1] - point[3]).abs() {
+        if add_diagonally && (point[0] - point[2]).abs() == (point[1] - point[3]).abs() {
             self.diagonally_add(
                 point[0].min(point[2]),
                 point[0].max(point[2]),
@@ -94,14 +91,14 @@ fn main() -> Result<()> {
         })
         .collect();
     let max_num = contents.iter().flatten().max();
-    let mut d1 = Diagram::new(max_num.unwrap().to_owned() as usize + 1);
+    let mut diagram = Diagram::new(max_num.unwrap().to_owned() as usize + 1);
     for point in &contents {
-        d1.add_line(point, false)?;
+        diagram.add_line(point, false)?;
     }
-    println!("Part 1: {}", d1.greater_than_two());
+    println!("Part 1: {}", diagram.greater_than_two());
     for point in &contents {
-        d1.add_line(point, true)?;
+        diagram.add_line(point, true)?;
     }
-    println!("Part 2: {}", d1.greater_than_two());
+    println!("Part 2: {}", diagram.greater_than_two());
     Ok(())
 }
