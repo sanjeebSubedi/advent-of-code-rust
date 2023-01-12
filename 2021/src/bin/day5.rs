@@ -52,7 +52,7 @@ impl Diagram {
         if point[0] == point[2] && point[1] == point[3] {
             return Ok(());
         }
-        if point[0] == point[2] || point[1] == point[3] {
+        if !part2 && (point[0] == point[2] || point[1] == point[3]) {
             for idx_x in point[0].min(point[2])..=point[0].max(point[2]) {
                 for idx_y in point[1].min(point[3])..=point[1].max(point[3]) {
                     self.increase_index(idx_x.try_into()?, idx_y.try_into()?);
@@ -98,11 +98,10 @@ fn main() -> Result<()> {
     for point in &contents {
         d1.add_line(point, false)?;
     }
-    let mut d2 = Diagram::new(max_num.unwrap().to_owned() as usize + 1);
-    for point in &contents {
-        d2.add_line(point, true)?;
-    }
     println!("Part 1: {}", d1.greater_than_two());
-    println!("Part 2: {}", d2.greater_than_two());
+    for point in &contents {
+        d1.add_line(point, true)?;
+    }
+    println!("Part 2: {}", d1.greater_than_two());
     Ok(())
 }
