@@ -16,10 +16,7 @@ impl Diagram {
     }
 
     fn greater_than_two(&self) -> i32 {
-        self.matrix
-            .iter()
-            .flatten()
-            .fold(0, |acc, x| if x > &1 { acc + 1 } else { acc })
+        self.matrix.iter().flatten().filter(|x| **x > 1).count() as i32
     }
 
     fn diagonally_add(&mut self, point: &Vec<i32>) -> Result<()> {
