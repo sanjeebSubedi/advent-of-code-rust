@@ -12,15 +12,10 @@ fn decode_signal(input_signals: &Vec<HashSet<char>>) -> Result<Vec<HashSet<char>
             .unwrap()
             .to_owned()
     };
-    for num in vec![2, 3, 4, 7] {
-        match num {
-            2 => decoded[1] = unique_sets(&input_signals, 2),
-            3 => decoded[7] = unique_sets(&input_signals, 3),
-            4 => decoded[4] = unique_sets(&input_signals, 4),
-            7 => decoded[8] = unique_sets(&input_signals, 7),
-            _ => {}
-        }
-    }
+    decoded[1] = unique_sets(&input_signals, 2);
+    decoded[7] = unique_sets(&input_signals, 3);
+    decoded[4] = unique_sets(&input_signals, 4);
+    decoded[8] = unique_sets(&input_signals, 7);
     let seven_union_four: HashSet<char> = decoded[7].union(&decoded[4]).cloned().collect();
     for input_signal in input_signals {
         match input_signal.len() {
@@ -60,12 +55,11 @@ fn main() -> Result<()> {
                 .collect()
         })
         .collect();
-    let count = contents
+    let part1_answer = contents
         .iter()
         .flat_map(|entry| entry.iter().skip(10))
         .filter(|word| [2, 4, 3, 7].contains(&word.len()))
         .count() as u32;
-    println!("Part 1: {}", count);
 
     let all_signals: Vec<Vec<HashSet<char>>> = contents
         .iter()
@@ -76,19 +70,17 @@ fn main() -> Result<()> {
                 .collect()
         })
         .collect();
-    let mut outer_sum: i32 = 0;
-    for (i, inputs) in all_signals.iter().enumerate() {
+    let mut part2_answer: i32 = 0;
+    for inputs in all_signals {
         let decoded_map = decode_signal(&inputs[..10].to_vec())?;
         let mut inner_sum = String::from("");
-        for output in &all_signals[i][10..] {
-            for (i, input) in decoded_map.iter().enumerate() {
-                if input.symmetric_difference(&output).count() == 0 {
-                    inner_sum.push_str(&i.to_string());
-                }
-            }
+        for output in &inputs[10..] {
+            let index = decoded_map.iter().position(|signal| signal.eq(output));
+            inner_sum.push_str(&index.unwrap().to_string());
         }
-        outer_sum += i32::from_str_radix(&inner_sum, 10)?;
+        part2_answer += i32::from_str_radix(&inner_sum, 10)?;
     }
-    println!("Part 2: {}", outer_sum);
+    println!("Part 1: {}", part1_answer);
+    println!("Part 2: {}", part2_answer);
     Ok(())
 }
