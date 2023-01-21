@@ -16,28 +16,19 @@ fn decode_signal(input_signals: &Vec<HashSet<char>>) -> Result<Vec<HashSet<char>
     decoded[7] = unique_sets(&input_signals, 3);
     decoded[4] = unique_sets(&input_signals, 4);
     decoded[8] = unique_sets(&input_signals, 7);
-    let seven_union_four: HashSet<char> = decoded[7].union(&decoded[4]).cloned().collect();
-    for input_signal in input_signals {
-        match input_signal.len() {
-            6 => {
-                if input_signal.is_superset(&seven_union_four) {
-                    decoded[9] = input_signal.to_owned();
-                } else if input_signal.is_superset(&decoded[1]) {
-                    decoded[0] = input_signal.to_owned();
-                } else {
-                    decoded[6] = input_signal.to_owned();
-                }
-            }
-            5 => {
-                if input_signal.symmetric_difference(&seven_union_four).count() == 4 {
-                    decoded[2] = input_signal.to_owned();
-                } else if input_signal.is_superset(&decoded[1]) {
-                    decoded[3] = input_signal.to_owned();
-                } else {
-                    decoded[5] = input_signal.to_owned();
-                }
-            }
-            _ => {}
+    for signal in input_signals {
+        match (
+            signal.len(),
+            signal.symmetric_difference(&decoded[1]).count(),
+            signal.symmetric_difference(&decoded[4]).count(),
+        ) {
+            (6, 4, 2) => decoded[9] = signal.to_owned(),
+            (6, 6, 4) => decoded[6] = signal.to_owned(),
+            (6, 4, 4) => decoded[0] = signal.to_owned(),
+            (5, 5, 3) => decoded[5] = signal.to_owned(),
+            (5, 3, 3) => decoded[3] = signal.to_owned(),
+            (5, 5, 5) => decoded[2] = signal.to_owned(),
+            (_, _, _) => {}
         }
     }
     Ok(decoded)
