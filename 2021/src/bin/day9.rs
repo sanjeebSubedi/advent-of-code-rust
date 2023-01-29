@@ -97,8 +97,6 @@ fn main() -> Result<()> {
         .find_low_points()
         .iter()
         .map(|point| point + 1)
-        .collect_vec()
-        .iter()
         .sum::<i32>();
     println!("Part 1: {}", low_points);
     let basin_sizes = grid.find_basins();
